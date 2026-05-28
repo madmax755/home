@@ -44,4 +44,48 @@ alias dlogs='dc logs -f private-api public-api browser-worker light-worker heavy
 alias gt='f(){ git tag "$1" && git push origin "$1"; }; f'
 alias adog='git log --oneline --decorate --graph --all -30'
 alias gs='git status'
+alias gsw='git switch'
 
+# prompt for overwrite confirmation
+alias mv='mv -i'
+alias cp='cp -i'
+
+
+# systemctl
+alias status='sudo systemctl status'
+alias restart='sudo systemctl restart'
+
+
+# Use cd, ls, zoxide replacements when available
+
+if command -v eza &> /dev/null; then
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lsa='ls -a'
+  alias lt='eza --tree --level=2 --long --icons --git'
+  alias lta='lt -a'
+fi
+
+if [[ "$TERM" == "xterm-kitty" ]]; then
+  alias ff="fzf --preview 'case \$(file --mime-type -b {}) in image/*) kitty icat --clear --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 {} ;; *) bat --style=numbers --color=always {} ;; esac'"
+else
+  alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+fi
+
+if command -v zoxide &> /dev/null; then
+  alias cd="zd"
+  zd() {
+    if (( $# == 0 )); then
+      builtin cd ~ || return
+    elif [[ -d $1 ]]; then
+      builtin cd "$1" || return
+    else
+      if ! z "$@"; then
+        echo "Error: Directory not found"
+        return 1
+      fi
+
+      printf "\U000F17A9 "
+      pwd
+    fi
+  }
+fi
