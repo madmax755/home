@@ -57,7 +57,7 @@ dup() {
 }
 
 ddown() {
-  local root repo d
+  local root repo d stacks_dir
   root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
     dc down "$@"
     return $?
@@ -66,11 +66,16 @@ ddown() {
 
   if [[ "$repo" == "dealeros" ]]; then
     (cd "$root" && dc down "$@") || return $?
-    for d in "$root/demos/stacks"/*/; do
+    stacks_dir="$root/demos/stacks"
+    for d in "$stacks_dir"/*/; do
+      [[ -d "$d" ]] || continue
       [[ -f "$d/compose.yml" ]] || continue
       docker compose -f "$d/compose.yml" down -v --remove-orphans
     done
-    rm -rf "$root/demos/stacks/"*/
+    if compgen -G "$stacks_dir"/*/ >/dev/null; then
+      # Demo stacks are written by containers as root; remove via docker.
+      docker run --rm -v "$stacks_dir:/stacks" alpine:3.21 sh -c 'rm -rf /stacks/*/'
+    fi
   else
     dc down "$@"
   fi
