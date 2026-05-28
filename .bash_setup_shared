@@ -5,7 +5,13 @@ export EDITOR=micro
 export GIT_EDITOR=micro
 
 
-alias dc='docker compose'
+dc() {
+  if [[ -f compose.dev.yml ]]; then
+    docker compose -f compose.dev.yml "$@"
+  else
+    docker compose "$@"
+  fi
+}
 
 alias rs='rsync -ah --info=progress2'
 
