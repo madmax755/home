@@ -73,8 +73,7 @@ ddown() {
       docker compose -f "$d/compose.yml" down -v --remove-orphans
     done
     if compgen -G "$stacks_dir"/*/ >/dev/null; then
-      # Demo stacks are written by containers as root; remove via docker.
-      docker run --rm -v "$stacks_dir:/stacks" alpine:3.21 sh -c 'rm -rf /stacks/*/'
+      sudo rm -rf "$stacks_dir"/*/
     fi
   else
     dc down "$@"
