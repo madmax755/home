@@ -1,0 +1,47 @@
+
+
+# set micro as editor
+export EDITOR=micro
+export GIT_EDITOR=micro
+
+
+alias dc='docker compose'
+
+alias rs='rsync -ah --info=progress2'
+
+# get the process(es) running on a port
+port() {
+  if [ -z "$1" ]; then
+    echo "Usage: port <port-number>"
+    return 1
+  fi
+  sudo lsof -iTCP:$1 -sTCP:LISTEN -Pn 2>/dev/null | \
+    awk 'NR==1 {printf "%-15s %-8s %-25s %-10s\n", "COMMAND", "PID", "ADDRESS", "PORT"}
+         NR>1 {
+           split($9, a, ":");
+           port=a[length(a)];
+           printf "%-15s %-8s %-25s %-10s\n", $1, $2, a[1], port
+         }'
+}
+
+
+# please
+please() {
+    # Get the command *before* 'please' itself
+    last_cmd=$(HISTTIMEFORMAT= history 2 | head -n 1 | sed 's/^ *[0-9]* *//')
+
+    if [[ -z "$last_cmd" ]]; then
+        echo "No previous command found."
+        return 1
+    fi
+    sudo bash -c "$last_cmd"
+}
+
+# sterling specific stuff
+alias dup='xhost +local:docker 2>/dev/null; docker compose up -d --force-recreate --remove-orphans'
+alias drs='docker compose restart browser-worker light-worker heavy-worker'
+alias dlogs='dc logs -f private-api public-api browser-worker light-worker heavy-worker'
+alias gt='f(){ git tag "$1" && git push origin "$1"; }; f'
+alias adog='git log --oneline --decorate --graph --all -30'
+alias gs='git status'
+
