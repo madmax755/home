@@ -37,8 +37,18 @@ please() {
     sudo bash -c "$last_cmd"
 }
 
-# sterling specific stuff
-alias dup='xhost +local:docker 2>/dev/null; docker compose up -d --force-recreate --remove-orphans'
+# project-specific docker compose up
+dup() {
+  if [[ -f compose.dev.yml ]]; then
+    docker compose -f compose.dev.yml up -d --build --force-recreate --remove-orphans
+  elif [[ -f docker-compose.yml ]]; then
+    xhost +local:docker 2>/dev/null
+    docker compose up -d --force-recreate --remove-orphans
+  else
+    echo "dup: no compose file here (need compose.dev.yml or docker-compose.yml)" >&2
+    return 1
+  fi
+}
 alias drs='docker compose restart browser-worker light-worker heavy-worker'
 alias dlogs='dc logs -f private-api public-api browser-worker light-worker heavy-worker'
 alias gt='f(){ git tag "$1" && git push origin "$1"; }; f'
