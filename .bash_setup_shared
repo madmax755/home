@@ -55,8 +55,41 @@ dup() {
     return 1
   fi
 }
+
+ddown() {
+  local root repo d
+  root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+    dc down "$@"
+    return $?
+  }
+  repo="$(basename "$root")"
+
+  if [[ "$repo" == "dealeros" ]]; then
+    (cd "$root" && dc down "$@") || return $?
+    for d in "$root/demos/stacks"/*/; do
+      [[ -f "$d/compose.yml" ]] || continue
+      docker compose -f "$d/compose.yml" down -v --remove-orphans
+    done
+    rm -rf "$root/demos/stacks/"*/
+  else
+    dc down "$@"
+  fi
+}
+
 alias drs='docker compose restart browser-worker light-worker heavy-worker'
-alias dlogs='dc logs -f private-api public-api browser-worker light-worker heavy-worker'
+dlogs() {
+  local root repo
+  root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+    echo "dlogs: not in a git repository" >&2
+    return 1
+  }
+  repo="$(basename "$root")"
+  if [[ "$repo" == "sterling" ]]; then
+    dc logs -f private-api public-api browser-worker light-worker heavy-worker "$@"
+  else
+    dc logs -f "$@"
+  fi
+}
 alias gt='f(){ git tag "$1" && git push origin "$1"; }; f'
 alias adog='git log --oneline --decorate --graph --all -30'
 alias gs='git status'
