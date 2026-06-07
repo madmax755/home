@@ -94,7 +94,29 @@ dlogs() {
     dc logs -f "$@"
   fi
 }
-alias gt='f(){ git tag "$1" && git push origin "$1"; }; f'
+gt() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: gt <tag>" >&2
+    return 1
+  fi
+
+  local reply
+  while true; do
+    read -r -p "Have you updated the changelog with your changes? [y/n] " reply
+    case "$reply" in
+      y|Y) break ;;
+      n|N)
+        echo "Tagging cancelled."
+        return 1
+        ;;
+      *)
+        echo "Please answer y or n."
+        ;;
+    esac
+  done
+
+  git tag "$1" && git push origin "$1"
+}
 alias adog='git log --oneline --decorate --graph --all -30'
 alias gs='git status'
 alias gsw='git switch'
