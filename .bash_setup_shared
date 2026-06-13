@@ -5,9 +5,30 @@ export EDITOR=micro
 export GIT_EDITOR=micro
 
 
+_compose_file() {
+  local f
+  for f in \
+    compose.dev.yml compose.dev.yaml \
+    docker-compose.dev.yml docker-compose.dev.yaml \
+    compose.yml compose.yaml \
+    docker-compose.yml docker-compose.yaml
+  do
+    if [[ -f "$f" ]]; then
+      echo "$f"
+      return 0
+    fi
+  done
+  return 1
+}
+
+_is_dev_compose_file() {
+  [[ "$1" =~ \.dev\.(ya?ml)$ ]]
+}
+
 dc() {
-  if [[ -f compose.dev.yml ]]; then
-    docker compose -f compose.dev.yml "$@"
+  local compose_file
+  if compose_file=$(_compose_file); then
+    docker compose -f "$compose_file" "$@"
   else
     docker compose "$@"
   fi
@@ -45,14 +66,17 @@ please() {
 
 # project-specific docker compose up
 dup() {
-  if [[ -f compose.dev.yml ]]; then
-    docker compose -f compose.dev.yml up -d --build --force-recreate --remove-orphans
-  elif [[ -f docker-compose.yml ]]; then
-    xhost +local:docker 2>/dev/null
-    docker compose up -d --force-recreate --remove-orphans
-  else
-    echo "dup: no compose file here (need compose.dev.yml or docker-compose.yml)" >&2
+  local compose_file
+  compose_file=$(_compose_file) || {
+    echo "dup: no compose file here (need compose*.yml or docker-compose*.yml)" >&2
     return 1
+  }
+
+  if _is_dev_compose_file "$compose_file"; then
+    docker compose -f "$compose_file" up -d --build --force-recreate --remove-orphans
+  else
+    xhost +local:docker 2>/dev/null
+    docker compose -f "$compose_file" up -d --force-recreate --remove-orphans
   fi
 }
 
