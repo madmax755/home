@@ -1,0 +1,70 @@
+# Inventory for Max Kendall's always-on Tailscale fleet.
+# Copy to hosts.yml and edit. proxy_jump may be an inventory name (e.g. server1)
+# or a full user@host jump string.
+
+hosts:
+  - name: server1
+    host: 100.100.126.125
+    user: max-kendall
+
+  - name: proxmox
+    host: 100.78.145.98
+    user: root
+    proxy_jump: server1
+
+  - name: omv
+    host: 100.78.70.66
+    user: root
+    proxy_jump: server1
+
+  - name: immich
+    host: 100.97.234.26
+    user: root
+    proxy_jump: server1
+
+  - name: nextcloud
+    host: 100.90.192.46
+    user: root
+    proxy_jump: server1
+
+  - name: vaultwarden
+    host: 100.115.59.95
+    user: root
+    proxy_jump: server1
+
+  - name: code
+    host: 100.119.32.41
+    user: root
+    proxy_jump: server1
+
+  - name: registry
+    host: 100.81.62.22
+    user: root
+    proxy_jump: server1
+
+  - name: action-runner
+    host: 100.92.207.53
+    user: root
+    proxy_jump: server1
+
+  - name: sortedautos
+    host: 100.99.82.27
+    user: root
+    proxy_jump: server1
+
+  - name: vps
+    host: 100.67.157.72
+    user: sterling
+
+  - name: crays
+    host: 100.123.66.67
+    user: root
+    proxy_jump: server1
+
+  # Self-check the Pi running this container (no SSH).
+  - name: pi
+    host: localhost
+    user: local
+    local: true
+    # extra_mounts:
+    #   - /mnt/data
