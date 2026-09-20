@@ -154,6 +154,28 @@ alias cp='cp -i'
 alias status='sudo systemctl status'
 alias restart='sudo systemctl restart'
 
+# Toggle Tailscale between subnet routes only and proxmox as the exit node.
+tailscale() {
+  if [[ "${1:-}" != "toggle" ]]; then
+    command tailscale "$@"
+    return
+  fi
+
+  local using_exit_node
+  using_exit_node="$(command tailscale status --json | jq -r '.ExitNodeStatus != null')" || {
+    echo "tailscale toggle: could not read Tailscale status" >&2
+    return 1
+  }
+
+  if [[ "$using_exit_node" == "true" ]]; then
+    echo "Switching to routes via proxmox (no exit node)..."
+    sudo tailscale up --accept-routes --operator=mk --exit-node= --reset
+  else
+    echo "Switching to exit node via proxmox..."
+    sudo tailscale up --accept-routes --operator=mk --exit-node=proxmox --reset
+  fi
+}
+
 
 # Use cd, ls, zoxide replacements when available
 
