@@ -6,7 +6,7 @@
 
 -- SUPER+F was: ASUS platform profile cycle.
 hl.unbind("SUPER + F")
-o.bind("SUPER + F", "Walker launcher", "walker")
+o.bind("SUPER + F", "Search files", "walker --provider files --width 460 --height 420")
 
 -- SUPER+L was: Toggle workspace layout. Lock is SUPER+CTRL+L by default.
 hl.unbind("SUPER + L")
