@@ -1,0 +1,70 @@
+# This repository lives at $HOME. Keep it opt-in: adding a new file requires
+# an explicit `git add -f <path>` (or an allowlist entry below).
+/*
+!/.gitignore
+!/README.md
+!/.bash_setup_shared
+
+# Hyprland's active Omarchy Lua configuration. Monitor definitions are tied to
+# this machine's display layout; edit them here when intentionally changing it.
+!/.config/
+/.config/*
+!/.config/hypr/
+/.config/hypr/*
+!/.config/hypr/hyprland.lua
+!/.config/hypr/bindings.lua
+!/.config/hypr/monitors.lua
+!/.config/hypr/input.lua
+!/.config/hypr/looknfeel.lua
+!/.config/hypr/autostart.lua
+
+# Walker configuration and the customized Omarchy theme.
+!/.config/walker/
+/.config/walker/*
+!/.config/walker/config.toml
+!/.config/walker/themes/
+/.config/walker/themes/*
+!/.config/walker/themes/omarchy/
+/.config/walker/themes/omarchy/*
+!/.config/walker/themes/omarchy/layout.xml
+!/.config/walker/themes/omarchy/style.css
+
+# Personal Omarchy shell settings, hooks, plugin, and theme override.
+!/.config/omarchy/
+/.config/omarchy/*
+!/.config/omarchy/shell.json
+!/.config/omarchy/extensions/
+/.config/omarchy/extensions/*
+!/.config/omarchy/extensions/omarchy-menu.jsonc
+!/.config/omarchy/hooks/
+/.config/omarchy/hooks/*
+!/.config/omarchy/hooks/post-update.d/
+/.config/omarchy/hooks/post-update.d/*
+!/.config/omarchy/hooks/post-update.d/setup-agent.hook
+!/.config/omarchy/hooks/theme-set.d/
+/.config/omarchy/hooks/theme-set.d/*
+!/.config/omarchy/hooks/theme-set.d/10-owe-sync
+!/.config/omarchy/plugins/
+/.config/omarchy/plugins/*
+!/.config/omarchy/plugins/mk.lock/
+/.config/omarchy/plugins/mk.lock/*
+!/.config/omarchy/plugins/mk.lock/LockView.qml
+!/.config/omarchy/plugins/mk.lock/Service.qml
+!/.config/omarchy/plugins/mk.lock/manifest.json
+!/.config/omarchy/themes/
+/.config/omarchy/themes/*
+!/.config/omarchy/themes/vantablack/
+/.config/omarchy/themes/vantablack/*
+!/.config/omarchy/themes/vantablack/ghostty.conf
+
+# Terminal and prompt settings. Git identity and credentials stay local.
+!/.config/ghostty/
+/.config/ghostty/*
+!/.config/ghostty/config
+!/.config/alacritty/
+/.config/alacritty/*
+!/.config/alacritty/alacritty.toml
+!/.config/foot/
+/.config/foot/*
+!/.config/foot/foot.ini
+!/.config/starship.toml
