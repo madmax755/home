@@ -36,3 +36,7 @@ o.window("^BeeperTexts$", { workspace = "2 silent", focus_on_activate = false })
 hl.workspace_rule({ workspace = "1", monitor = "eDP-1" })
 hl.workspace_rule({ workspace = "2", monitor = "eDP-1" })
 hl.workspace_rule({ workspace = "3", monitor = "eDP-1" })
+
+-- Walker is layer-shell, so a theme's decoration:rounding never clips it.
+-- Restamp its CSS whenever Hyprland reloads (theme changes and corner toggles).
+os.execute("bash " .. o.shell_quote((os.getenv("HOME") or "") .. "/.config/omarchy/hooks/theme-set.d/20-walker-theme") .. " >/dev/null 2>&1")

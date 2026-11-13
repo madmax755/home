@@ -1,0 +1,100 @@
+#!/bin/bash
+# Keep Walker's layer-shell card on the same corner radius as the Omarchy theme.
+# Layer surfaces do not inherit decoration:rounding, so the CSS has to be stamped.
+# Theme changes run this hook; Hyprland reloads run it too, which covers
+# `omarchy hyprland corners`.
+
+set -euo pipefail
+
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy"
+TOGGLES="$STATE/toggles/hypr"
+THEME_CSS="$STATE/current/theme/walker.css"
+TEMPLATE="$HOME/.config/omarchy/themed/walker.css.tpl"
+DEST="$HOME/.config/walker/themes/omarchy/style.css"
+
+last_rounding() {
+  local file="$1" line value
+
+  [[ -f $file ]] || return 1
+  line=$(grep -E '^[[:space:]]*rounding[[:space:]]*=' "$file" | tail -n 1 || true)
+  [[ -n $line ]] || return 1
+  value=$(sed -E 's/.*=[[:space:]]*([0-9]+).*/\1/' <<<"$line")
+  [[ $value =~ ^[0-9]+$ ]] || return 1
+  printf '%s\n' "$value"
+}
+
+theme_radius() {
+  local value
+
+  if [[ -f $TOGGLES/corners-sharp.lua ]]; then
+    printf '0\n'
+  elif value=$(last_rounding "$TOGGLES/corners-rounded.lua"); then
+    printf '%s\n' "$value"
+  elif value=$(last_rounding "$HOME/.config/hypr/looknfeel.lua"); then
+    printf '%s\n' "$value"
+  elif value=$(last_rounding "$STATE/current/theme/hyprland.lua"); then
+    printf '%s\n' "$value"
+  else
+    printf '0\n'
+  fi
+}
+
+render_template() {
+  local table
+
+  table=$(mktemp)
+  omarchy-theme-color --all | awk -F '\t' '{ printf "{{ %s }}\037%s\n", $1, $2 }' >"$table"
+  awk -v table="$table" '
+    BEGIN {
+      while ((getline row < table) > 0) {
+        sep = index(row, "\037")
+        if (sep > 0) values[substr(row, 1, sep - 1)] = substr(row, sep + 1)
+      }
+      close(table)
+    }
+    {
+      line = $0
+      out = ""
+      while ((open = index(line, "{{")) > 0) {
+        span = index(substr(line, open + 2), "}}")
+        if (span == 0) break
+        token = substr(line, open, span + 3)
+        if (token in values) {
+          out = out substr(line, 1, open - 1) values[token]
+          line = substr(line, open + length(token))
+        } else {
+          out = out substr(line, 1, open)
+          line = substr(line, open + 1)
+        }
+      }
+      print out line
+    }
+  ' "$TEMPLATE"
+  rm -f "$table"
+}
+
+radius=$(theme_radius)
+[[ $radius =~ ^[0-9]+$ ]] || radius=0
+
+source_css=$(mktemp)
+cleanup() { rm -f "$source_css"; }
+trap cleanup EXIT
+
+if [[ -f $THEME_CSS ]]; then
+  cp "$THEME_CSS" "$source_css"
+elif [[ -f $TEMPLATE ]]; then
+  render_template >"$source_css"
+else
+  echo "Walker theme template missing: $TEMPLATE" >&2
+  exit 1
+fi
+
+mkdir -p "$(dirname "$DEST")"
+stamped=$(mktemp)
+sed -E "s/border-radius: 0px; \\/\\* omarchy-rounding \\*\\//border-radius: ${radius}px;/" "$source_css" >"$stamped"
+
+if [[ -f $DEST ]] && cmp -s "$stamped" "$DEST"; then
+  rm -f "$stamped"
+else
+  mv "$stamped" "$DEST"
+fi

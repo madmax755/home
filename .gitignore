@@ -44,6 +44,10 @@
 !/.config/omarchy/hooks/theme-set.d/
 /.config/omarchy/hooks/theme-set.d/*
 !/.config/omarchy/hooks/theme-set.d/10-owe-sync
+!/.config/omarchy/hooks/theme-set.d/20-walker-theme
+!/.config/omarchy/themed/
+/.config/omarchy/themed/*
+!/.config/omarchy/themed/walker.css.tpl
 !/.config/omarchy/plugins/
 /.config/omarchy/plugins/*
 !/.config/omarchy/plugins/mk.lock/
