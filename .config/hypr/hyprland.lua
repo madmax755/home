@@ -30,6 +30,7 @@ require("default.hypr.toggles")
 -- "silent" opens the window on that workspace without switching to it.
 o.window("^ticktick$", { workspace = "1 silent" })
 o.window("^grok-bot$", { workspace = "special:scratchpad silent" })
+o.window("^chrome-calendar\\.google\\.com__-Default$", { workspace = "special:scratchpad silent" })
 o.window("^BeeperTexts$", { workspace = "2 silent", focus_on_activate = false })
 
 -- Keep the pinned workspaces on the laptop when the ultrawide is connected.
